@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">Exchange Rates</string>
+
+    <!-- Strings used for fragments for navigation -->
+    <string name="list_fragment_label">Курсы валют</string>
+    <string name="list_fragment_label_at">Курсы валют на %1$s</string>
+    <string name="exchange_fragment_label">Конвертация валюты</string>
+
+    //Currency List Fragment
+    <string name="refresh_fab_description">обновление курсов валют</string>
+    <string name="nominal_name_currency_text">"%1$d %2$s"</string>
+    <string name="empty_list_string">Список валюты пуст, обновите данные</string>
+
+    //Convert Fragment
+    <string name="textviewRuText">Российский рубль</string>
+    <string name="edittextHint">Введите сумму</string>
+</resources>

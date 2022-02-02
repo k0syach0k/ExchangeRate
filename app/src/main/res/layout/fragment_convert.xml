@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.convert.ConvertFragment">
+
+    <TextView
+        android:id="@+id/textviewRu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/textviewRuText"
+        android:textSize="24sp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_margin="8dp"/>
+
+    <EditText
+        android:id="@+id/edittextRu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:hint="@string/edittextHint"
+        android:importantForAutofill="no"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp"
+        android:textSize="32sp"
+        android:textColorHint="#757575"
+        app:layout_constraintTop_toBottomOf="@id/textviewRu"
+        tools:ignore="DuplicateSpeakableTextCheck" />
+
+    <TextView
+        android:id="@+id/textviewOther"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Фунт стерлингов Соединенного королевства"
+        android:textSize="24sp"
+        app:layout_constraintTop_toBottomOf="@id/edittextRu"
+        android:layout_margin="8dp"/>
+
+    <EditText
+        android:id="@+id/edittextOther"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:hint="@string/edittextHint"
+        android:importantForAutofill="no"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp"
+        android:textColorHint="#757575"
+        android:textSize="32sp"
+        app:layout_constraintTop_toBottomOf="@id/textviewOther"
+        tools:layout_editor_absoluteX="8dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
