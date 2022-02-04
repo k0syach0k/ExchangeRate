@@ -9,6 +9,8 @@ object JSONmodel {
     const val CURRENCY_PREVIOUS_VALUE = "Previous"
 
     const val DATE_ID = "Date"
+    const val DATE_FORMATTER = "dd MMMM yyyy HH:mm"
+    const val DATE_LOCALE = "ru"
 
     const val VALUTE_ID = "Valute"
 }

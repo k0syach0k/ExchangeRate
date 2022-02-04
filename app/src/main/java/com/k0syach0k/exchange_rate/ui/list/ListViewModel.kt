@@ -4,14 +4,31 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.k0syach0k.exchange_rate.model.currency.Currency
 import com.k0syach0k.exchange_rate.utils.SingleLiveEvent
 import kotlinx.coroutines.*
 
 class ListViewModel(application: Application) : AndroidViewModel(application) {
 
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            while (isActive) {
+                delay(30000)
+                try {
+                    repository.getRateFromNetwork() { listCurrency, offsetDateTime ->
+                        listCurrencyLiveData.postValue(listCurrency)
+                        dataRateLiveData.postValue(offsetDateTime)
+                    }
+                    messageLiveData.postValue("Курс валют обновлён")
+                } catch (t: Throwable) {
+                    messageLiveData.postValue(t.message)
+                }
+            }
+        }
+    }
+
     private val repository = ListRepository(application.baseContext)
-    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val listCurrencyLiveData: MutableLiveData<List<Currency>> by lazy {
         MutableLiveData<List<Currency>>().also {
@@ -40,8 +57,10 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
     val message: LiveData<String>
         get() = messageLiveData as LiveData<String>
 
+    // private val timerJob =
+
     fun getCurrencyRateFromNetwork() {
-        scope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             isLoadingLiveData.postValue(true)
             try {
                 repository.getRateFromNetwork() { listCurrency, offsetDateTime ->
@@ -58,7 +77,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun loadCurrency() {
-        scope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 listCurrencyLiveData.postValue(repository.loadCurrency())
             } catch (t: Throwable) {
@@ -68,7 +87,7 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun loadDataRate() {
-        scope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 dataRateLiveData.postValue(repository.loadDateTime())
             } catch (t: Throwable) {
@@ -79,6 +98,5 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
 
     override fun onCleared() {
         super.onCleared()
-        scope.cancel()
     }
 }

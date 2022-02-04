@@ -38,7 +38,7 @@ class ListRepository(context: Context) {
                         val offsetDateTime =
                             OffsetDateTime.parse(jsonObject.getString(JSONmodel.DATE_ID))
                         val formatter =
-                            DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm", Locale("ru"))
+                            DateTimeFormatter.ofPattern(JSONmodel.DATE_FORMATTER, Locale(JSONmodel.DATE_LOCALE))
                         val dateTimeString = offsetDateTime.format(formatter)
 
                         val valuteObject = jsonObject.getJSONObject(JSONmodel.VALUTE_ID)
