@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.k0syach0k.exchange_rate.R
-import com.k0syach0k.exchange_rate.model.Currency
+import com.k0syach0k.exchange_rate.model.currency.Currency
 
 class CurrencyAdapter(
     private val context: Context,

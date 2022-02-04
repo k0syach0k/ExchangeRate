@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.RecyclerView
 import com.k0syach0k.exchange_rate.R
-import com.k0syach0k.exchange_rate.model.Currency
+import com.k0syach0k.exchange_rate.model.currency.Currency
 
 class CurrencyHolder(
     private val view: View,

@@ -1,17 +1,30 @@
 package com.k0syach0k.exchange_rate.ui.list
 
-import com.k0syach0k.exchange_rate.model.Currency
+import android.content.Context
+import androidx.room.Room
+import com.k0syach0k.exchange_rate.db.DataBase
+import com.k0syach0k.exchange_rate.model.JSONmodel
+import com.k0syach0k.exchange_rate.model.currency.Currency
+import com.k0syach0k.exchange_rate.model.date_time.DateTime
 import com.k0syach0k.exchange_rate.network.Network
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
 import org.json.JSONObject
 import java.io.IOException
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+import java.util.*
 
-class ListRepository {
-    fun getRateFromNetwork(onComplete: (List<Currency>, LocalDateTime) -> Unit) {
+class ListRepository(context: Context) {
+    private val db = Room
+        .databaseBuilder(context, DataBase::class.java, "database")
+        .build()
+
+    private val currencyDao = db.currencyDao()
+    private val dateTimeDao = db.dateTimeDao()
+
+    fun getRateFromNetwork(onComplete: (List<Currency>, String) -> Unit) {
         Network.getCall().apply {
             enqueue(object : Callback {
                 override fun onFailure(call: Call, e: IOException) {
@@ -20,33 +33,34 @@ class ListRepository {
 
                 override fun onResponse(call: Call, response: Response) {
                     if (response.isSuccessful) {
-                        try {
-                            val jsonObject = JSONObject(response.body?.string().orEmpty())
+                        val jsonObject = JSONObject(response.body?.string().orEmpty())
 
-                            val localDate = OffsetDateTime.parse(jsonObject.getString("Date")).toLocalDateTime()
+                        val offsetDateTime =
+                            OffsetDateTime.parse(jsonObject.getString(JSONmodel.DATE_ID))
+                        val formatter =
+                            DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm", Locale("ru"))
+                        val dateTimeString = offsetDateTime.format(formatter)
 
-                            val valuteObject = jsonObject.getJSONObject("Valute")
-                            val keys = valuteObject.keys()
-                            val listCurrency = mutableListOf<Currency>()
-                            while (keys.hasNext()) {
-                                val currentKey = keys.next()
-                                val currentJSON = valuteObject.getJSONObject(currentKey)
-                                val currency = Currency(
-                                    currentJSON.getString("ID"),
-                                    currentJSON.getInt("NumCode"),
-                                    currentJSON.getString("CharCode"),
-                                    currentJSON.getInt("Nominal"),
-                                    currentJSON.getString("Name"),
-                                    currentJSON.getDouble("Value"),
-                                    currentJSON.getDouble("Previous")
-                                )
-                                listCurrency.add(currency)
-                            }
-                            if (listCurrency.isNotEmpty()) {
-                                onComplete(listCurrency, localDate)
-                            }
-                        } catch (e: Exception) {
-                            throw e
+                        val valuteObject = jsonObject.getJSONObject(JSONmodel.VALUTE_ID)
+                        val keys = valuteObject.keys()
+                        val listCurrency = mutableListOf<Currency>()
+                        while (keys.hasNext()) {
+                            val currentKey = keys.next()
+                            val currentJSON = valuteObject.getJSONObject(currentKey)
+                            val currency = Currency(
+                                currentJSON.getInt(JSONmodel.CURRENCY_NUMBER_CODE),
+                                currentJSON.getString(JSONmodel.CURRENCY_SYMBOL_CODE),
+                                currentJSON.getInt(JSONmodel.CURRENCY_NOMINAL),
+                                currentJSON.getString(JSONmodel.CURRENCY_NAME),
+                                currentJSON.getDouble(JSONmodel.CURRENCY_VALUE),
+                                currentJSON.getDouble(JSONmodel.CURRENCY_PREVIOUS_VALUE)
+                            )
+                            listCurrency.add(currency)
+                        }
+                        if (listCurrency.isNotEmpty()) {
+                            onComplete(listCurrency, dateTimeString)
+                            saveData(dateTimeString)
+                            saveCurrency(listCurrency)
                         }
                     } else {
                         throw Exception("Request unsuccessfully")
@@ -54,5 +68,22 @@ class ListRepository {
                 }
             })
         }
+    }
+
+    private fun saveData(dateTimeString: String) {
+        dateTimeDao.insertDateTime(DateTime(1, dateTimeString))
+    }
+
+    private fun saveCurrency(currencyList: List<Currency>) {
+        currencyDao.deleteAll()
+        currencyDao.insertAll(currencyList)
+    }
+
+    fun loadCurrency(): List<Currency> {
+        return currencyDao.getAll()
+    }
+
+    fun loadDateTime(): String {
+        return dateTimeDao.getDateTime()
     }
 }

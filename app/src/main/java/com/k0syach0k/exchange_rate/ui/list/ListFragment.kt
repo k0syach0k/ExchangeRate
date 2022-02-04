@@ -14,8 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.k0syach0k.exchange_rate.R
 import com.k0syach0k.exchange_rate.databinding.FragmentListBinding
 import com.k0syach0k.exchange_rate.ui.list.adapter.CurrencyAdapter
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class ListFragment : Fragment() {
 
@@ -47,14 +45,22 @@ class ListFragment : Fragment() {
 
         currencyAdapter = CurrencyAdapter(this.requireContext()) { position: Int ->
             val args = Bundle()
-            args.putParcelable("currency", currencyAdapter?.getCurrency(position))
+            val currentCurrency = currencyAdapter!!.getCurrency(position)
+            args.putString("currency_name", currentCurrency.name)
+            args.putInt("currency_nominal", currentCurrency.nominal)
+            args.putFloat("currency_value", currentCurrency.value.toFloat())
             findNavController().navigate(R.id.action_ListFragment_to_ExchangeFragment, args)
         }
 
         with(view.findViewById<RecyclerView>(R.id.recyclerView)) {
             adapter = currencyAdapter
             setHasFixedSize(true)
-            addItemDecoration(DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL))
+            addItemDecoration(
+                DividerItemDecoration(
+                    requireContext(),
+                    DividerItemDecoration.VERTICAL
+                )
+            )
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) {
@@ -74,9 +80,10 @@ class ListFragment : Fragment() {
         }
 
         viewModel.dataRate.observe(viewLifecycleOwner) {
-            val formatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm", Locale("ru"))
-            val dateString = it.format(formatter)
-            (activity as AppCompatActivity).supportActionBar?.title = getString(R.string.list_fragment_label_at, dateString)
+            it?.let {
+                (activity as AppCompatActivity).supportActionBar?.title =
+                    getString(R.string.list_fragment_label_at, it)
+            }
         }
     }
 
