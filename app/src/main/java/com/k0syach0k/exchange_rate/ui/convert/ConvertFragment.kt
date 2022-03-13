@@ -15,8 +15,9 @@ class ConvertFragment : Fragment() {
 
     private var _binding: FragmentConvertBinding? = null
     private val args by navArgs<ConvertFragmentArgs>()
-    private val value by lazy { args.currencyValue.toBigDecimal() }
-    private val nominal by lazy { args.currencyNominal.toBigDecimal() }
+    private val currency by lazy { args.currency }
+    private val value by lazy { args.currency.value.toBigDecimal() }
+    private val nominal by lazy { args.currency.nominal.toBigDecimal() }
     private var editFlag = true
 
     // This property is only valid between onCreateView and
@@ -35,7 +36,7 @@ class ConvertFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.textviewOther.text = args.currencyName
+        binding.textviewOther.text = currency.name
 
         binding.edittextRu.doAfterTextChanged {
             if (editFlag) {

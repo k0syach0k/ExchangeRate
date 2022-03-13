@@ -1,7 +1,7 @@
 package com.k0syach0k.exchange_rate.model
 
 object JSONmodel {
-    const val CURRENCY_NUMBER_CODE = "NumCode"
+    const val CURRENCY_ID = "ID"
     const val CURRENCY_SYMBOL_CODE = "CharCode"
     const val CURRENCY_NOMINAL = "Nominal"
     const val CURRENCY_NAME = "Name"

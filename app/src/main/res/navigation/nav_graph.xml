@@ -22,13 +22,7 @@
         android:label="@string/exchange_fragment_label"
         tools:layout="@layout/fragment_convert" >
         <argument
-            android:name="currency_name"
-            app:argType="string" />
-        <argument
-            android:name="currency_nominal"
-            app:argType="integer" />
-        <argument
-            android:name="currency_value"
-            app:argType="float" />
+            android:name="currency"
+            app:argType="com.k0syach0k.exchange_rate.model.currency.Currency" />
     </fragment>
 </navigation>

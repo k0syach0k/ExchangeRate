@@ -33,22 +33,20 @@ class ListFragment : Fragment() {
 
         _binding = FragmentListBinding.inflate(inflater, container, false)
 
-        binding.refreshFAB.setOnClickListener {
-            viewModel.getCurrencyRateFromNetwork()
-        }
-
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        binding.refreshFAB.setOnClickListener {
+            viewModel.getCurrencyRate()
+        }
+
         currencyAdapter = CurrencyAdapter(this.requireContext()) { position: Int ->
             val args = Bundle()
             val currentCurrency = currencyAdapter!!.getCurrency(position)
-            args.putString("currency_name", currentCurrency.name)
-            args.putInt("currency_nominal", currentCurrency.nominal)
-            args.putFloat("currency_value", currentCurrency.value.toFloat())
+            args.putParcelable("currency", currentCurrency)
             findNavController().navigate(R.id.action_ListFragment_to_ExchangeFragment, args)
         }
 
