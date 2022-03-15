@@ -61,22 +61,22 @@ class ConvertFragment : Fragment() {
     }
 
     private fun onRuNumberChange() {
-        val ruCount = binding.edittextRu.text.toString().toBigDecimalOrNull()
-        if (ruCount != null) {
-            val otherCount = (ruCount * nominal).divide(value, 2, RoundingMode.DOWN)
-            binding.edittextOther.setText(otherCount.toPlainString(), TextView.BufferType.EDITABLE)
-        } else {
-            binding.edittextOther.setText("", TextView.BufferType.EDITABLE)
+        when (val ruCount = binding.edittextRu.text.toString().toBigDecimalOrNull()) {
+            null -> binding.edittextOther.setText("", TextView.BufferType.EDITABLE)
+            else -> binding.edittextOther.setText(
+                (ruCount * nominal).divide(value, 2, RoundingMode.DOWN).toPlainString(),
+                TextView.BufferType.EDITABLE
+            )
         }
     }
 
     private fun onOtherNumberChange() {
-        val otherCount = binding.edittextOther.text.toString().toBigDecimalOrNull()
-        if (otherCount != null) {
-            val ruCount = (value * otherCount).divide(nominal, 2, RoundingMode.DOWN)
-            binding.edittextRu.setText(ruCount.toPlainString(), TextView.BufferType.EDITABLE)
-        } else {
-            binding.edittextRu.setText("", TextView.BufferType.EDITABLE)
+        when (val otherCount = binding.edittextOther.text.toString().toBigDecimalOrNull()) {
+            null -> binding.edittextRu.setText("", TextView.BufferType.EDITABLE)
+            else -> binding.edittextRu.setText(
+                (value * otherCount).divide(nominal, 2, RoundingMode.DOWN).toPlainString(),
+                TextView.BufferType.EDITABLE
+            )
         }
     }
 }

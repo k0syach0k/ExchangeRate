@@ -4,15 +4,16 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CurrencyDao {
     @Query("SELECT * FROM currency")
-    fun getAll(): List<Currency>
+    fun getAll(): Flow<List<Currency>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(currencyList: List<Currency>)
 
-    @Query("DELETE FROM currency ")
+    @Query("DELETE FROM currency")
     fun deleteAll()
 }

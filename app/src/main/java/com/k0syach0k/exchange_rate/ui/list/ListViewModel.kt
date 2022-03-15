@@ -1,11 +1,7 @@
 package com.k0syach0k.exchange_rate.ui.list
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
-import com.k0syach0k.exchange_rate.model.currency.Currency
+import androidx.lifecycle.*
 import com.k0syach0k.exchange_rate.utils.SingleLiveEvent
 import kotlinx.coroutines.*
 
@@ -22,24 +18,11 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository = ListRepository(application.baseContext)
 
-    private val listCurrencyLiveData: MutableLiveData<List<Currency>> =
-        MutableLiveData<List<Currency>>().also {
-            getCurrencyFromDB()
-        }
-
-    private val dataRateLiveData: MutableLiveData<String> =
-        MutableLiveData<String>().also {
-            getDataFromDB()
-        }
-
     private val isLoadingLiveData = MutableLiveData<Boolean>()
     private val messageLiveData = SingleLiveEvent<String>()
 
-    val listCurrency: LiveData<List<Currency>>
-        get() = listCurrencyLiveData
-
-    val dataRate: LiveData<String>
-        get() = dataRateLiveData
+    val listCurrency = repository.loadCurrency().asLiveData()
+    val dateRate = repository.loadDateTime().asLiveData()
 
     val isLoading: LiveData<Boolean>
         get() = isLoadingLiveData
@@ -55,33 +38,10 @@ class ListViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun getCurrencyFromDB() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                listCurrencyLiveData.postValue(repository.loadCurrency())
-            } catch (t: Throwable) {
-                messageLiveData.postValue(t.message)
-            }
-        }
-    }
-
-    private fun getDataFromDB() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                dataRateLiveData.postValue(repository.loadDateTime())
-            } catch (t: Throwable) {
-                messageLiveData.postValue(t.message)
-            }
-        }
-    }
-
-    private fun getCurrencyRateFromNetwork() {
+    private suspend fun getCurrencyRateFromNetwork() {
         try {
-            repository.getRateFromNetwork { listCurrency, offsetDateTime ->
-                listCurrencyLiveData.postValue(listCurrency)
-                dataRateLiveData.postValue(offsetDateTime)
-                messageLiveData.postValue("Курс валют обновлён")
-            }
+            repository.getRateFromNetwork()
+            messageLiveData.postValue("Курс валют обновлён")
         } catch (t: Throwable) {
             messageLiveData.postValue(t.message)
         }
